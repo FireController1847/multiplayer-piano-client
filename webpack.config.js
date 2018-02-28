@@ -5,20 +5,18 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: {
-    'app': './src/js/script.js',
-    'Client': './src/js/Client.js',
-    'Color': './src/js/Color.js',
-    'jquery.min.js': './src/js/jquery.min.js',
-    'lame.min.js': './src/js/lame.min.js',
-    'NoteQuota': './src/js/NoteQuota.js',
-    'util': './src/js/util.js',
-    'workerTimer': './src/js/workerTimer.js'
+    app: './src/js/script.js',
+    Client: './src/js/Client.js',
+    Color: './src/js/Color.js',
+    NoteQuota: './src/js/NoteQuota.js',
+    util: './src/js/util.js',
+    workerTimer: './src/js/workerTimer.js'
   },
   devServer: {
     contentBase: './build'
   },
   plugins: [
-    new CleanWebpackPlugin(['build'], { exclude: ['audio'], verbose: true }),
+    new CleanWebpackPlugin(['build'], { exclude: ['audio', 'jquery.min.js', 'lame.min.js'], verbose: true }),
     new HtmlWebpackPlugin({
       template: './src/html/index.html'
     }),
