@@ -39,6 +39,7 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: false
+    minimize: false,
+    ecma: 7
   }
 };
