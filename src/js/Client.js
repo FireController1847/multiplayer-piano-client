@@ -133,6 +133,7 @@ Client.prototype.connect = function() {
 	this.ws.addEventListener("message", function(evt) {
 		console.log(evt);
 		var transmission = JSON.parse(evt.data);
+		console.log(transmission);
 		for(var i = 0; i < transmission.length; i++) {
 			var msg = transmission[i];
 			self.emit(msg.m, msg);
