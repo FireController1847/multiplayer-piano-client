@@ -1095,7 +1095,7 @@ Rect.prototype.contains = function(x, y) {
 
 ////////////////////////////////////////////////////////////////
 
-	var channel_id = decodeURIComponent(window.location.pathname);
+	var channel_id = decodeURIComponent(window.location.pathname.replace('/piano', ''));
 	if(channel_id.substr(0, 1) == "/") channel_id = channel_id.substr(1);
 	if(channel_id == "") channel_id = "lobby";
 
