@@ -32,7 +32,7 @@ $(function() {
 
 
 
-	var gSoundPath = "/piano/sounds/default/";
+	var gSoundPath = "/piano/audio/default/";
 	var gSoundExt = ".wav.mp3";
 	
 	// Yoshify.
