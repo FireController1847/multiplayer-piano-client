@@ -6,14 +6,17 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: {
-    app: './src/js/app.js'
+    app: './src/js/app.js',
+    AudioEngine: './src/js/AudioEngine.js',
+    MPP: './src/js/MPP.js',
+    WorkerTimer: './src/js/WorkerTimer.js'
   },
   devServer: {
     contentBase: './build'
   },
   plugins: [
     new CleanWebpackPlugin(['build'], { exclude: ['audio'], verbose: true }),
-    new UglifyJSPlugin(),
+    // new UglifyJSPlugin(),
     new HtmlWebpackPlugin({
       template: './src/html/index.html'
     }),
@@ -33,5 +36,8 @@ module.exports = {
         })
       }
     ]
+  },
+  optimization: {
+    minimize: false
   }
 };

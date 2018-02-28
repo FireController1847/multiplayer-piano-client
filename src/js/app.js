@@ -1,5 +1,5 @@
 // Require CSS
-require('../css/index.css');
+// require('../css/index.css');
 // // Require JS
 const MPP = require('./MPP.js');
 // Animation Frame

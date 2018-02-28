@@ -66,7 +66,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -212,58 +212,6 @@ class AudioEngine {
 }
 
 module.exports = AudioEngine;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const AudioEngine = __webpack_require__(0);
-
-class MPP {
-  constructor() {
-    // Variables
-    this.testMode = false;
-    this.seeOwnCursor = false;
-    // Objects
-    this.sounds = {
-      path: './audio/default/',
-      ext: '.wav.mp3'
-    };
-    this.defaults = {
-      DEFAULT_VELOCITY: 0.5,
-      TIMING_TARGET: 1000
-    };
-    this.handleURLHashes();
-    // AudioEngine
-    this.audio = new AudioEngine(this);
-  }
-  handleURLHashes() {
-    this.hashes = window.location.hash.toLowerCase().split('#');
-    this.hashes.shift();
-    this.testMode = this.hashes.includes('test');
-    this.seeOwnCursor = this.hashes.includes('seeowncursor');
-  }
-}
-
-module.exports = MPP;
-
-/***/ }),
-/* 2 */,
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Require CSS
-// require('../css/index.css');
-// // Require JS
-const MPP = __webpack_require__(1);
-// Animation Frame
-window.requestAnimationFrame = window.requestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
-  window.msRequestAnimationFrame ||
-  (cb => { setTimeout(cb, 1000 / 30); });
-// Export Multiplayer Piano
-window.MPP = new MPP();
 
 /***/ })
 /******/ ]);
