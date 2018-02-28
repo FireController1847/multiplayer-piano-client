@@ -1,9 +1,6 @@
-class WorkerTimer {
-  onmessage(event) {
-    setTimeout(() => {
-      postMessage({ args: event.data.args });
-    }, event.data.delay);
-  }
-}
-
-module.exports = WorkerTimer;
+self.onmessage = function(event)
+	{
+		setTimeout(function(){
+			postMessage({args:event.data.args});
+		},event.data.delay);
+	}
