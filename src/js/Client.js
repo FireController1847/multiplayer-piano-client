@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 if(typeof module !== "undefined") {
 	module.exports = Client;
 	WebSocket = require("ws");
@@ -131,6 +131,7 @@ Client.prototype.connect = function() {
 		self.emit("status", "Joining channel...");
 	});
 	this.ws.addEventListener("message", function(evt) {
+		console.log(evt);
 		var transmission = JSON.parse(evt.data);
 		for(var i = 0; i < transmission.length; i++) {
 			var msg = transmission[i];
