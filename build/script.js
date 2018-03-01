@@ -3,6 +3,14 @@
 
 $(function() {
 
+	if (window.location.pathname.replace('/piano', '') == '') {
+		window.location = window.location.href = "/piano/lobby";
+		return;
+	} else if (window.location.pathname.replace('/piano/', '') == '') {
+		window.location = window.location.href = "lobby";
+		return;
+	}
+
 	var test_mode = (window.location.hash && window.location.hash.match(/^(?:#.+)*#test(?:#.+)*$/i));
 
 	var gSeeOwnCursor = (window.location.hash && window.location.hash.match(/^(?:#.+)*#seeowncursor(?:#.+)*$/i));
@@ -37,7 +45,7 @@ $(function() {
 	
 	// Yoshify.
 	if ((window.location.hash && window.location.hash.match(/^(?:#.+)*#Piano_Great_and_Soft(?:#.+)*$/i))) {		
-		gSoundPath = "https://dl.dropboxusercontent.com/u/216104606/GreatAndSoftPiano/";		
+		gSoundPath = "/piano/audio/greatandsoft/";		
 		gSoundExt = ".mp3";		
 	}
 
@@ -941,6 +949,7 @@ Rect.prototype.contains = function(x, y) {
 		var piano = this;
 		piano.rootElement = rootElement;
 		piano.keys = {};
+		piano.keysarray = [];
 		
 		var white_spatial = 0;
 		var black_spatial = 0;
@@ -973,6 +982,14 @@ Rect.prototype.contains = function(x, y) {
 			addKey("c", 7);
 		}
 
+		for (var i in this.keys) {
+			this.keysarray.push(i);
+		}
+
+		this.section1 = this.keysarray.slice(Math.floor(this.keysarray.length / 2), this.keysarray.length);
+		this.section2 = this.keysarray.slice();
+		this.section2 = this.section2.splice(0, Math.floor(this.keysarray.length / 2));
+
 
 		this.renderer = new CanvasRenderer().init(this);
 		
@@ -985,11 +1002,25 @@ Rect.prototype.contains = function(x, y) {
 		var audio_engine = AudioEngineWeb;
 
 		this.audio = new audio_engine().init(function() {
-			for(var i in piano.keys) {
-				if(!piano.keys.hasOwnProperty(i)) continue;
+			for (var i = 0; i < Math.floor(piano.keysarray.length / 2); i++) {
 				(function() {
-					var key = piano.keys[i];
+					var key = piano.keys[piano.keysarray[i]];
 					piano.audio.load(key.note, gSoundPath + key.note + gSoundExt, function() {
+						console.log("audio load");
+						key.loaded = true;
+						key.timeLoaded = Date.now();
+						if(key.domElement) // todo: move this to renderer somehow
+							$(key.domElement).removeClass("loading");
+					});
+				})();
+			}
+		});
+
+		this.audio2 = new audio_engine().init(function() {
+			for (var i = Math.floor(piano.keysarray.length / 2); i < piano.keysarray.length; i++) {
+				(function() {
+					var key = piano.keys[piano.keysarray[i]];
+					piano.audio2.load(key.note, gSoundPath + key.note + gSoundExt, function() {
 						key.loaded = true;
 						key.timeLoaded = Date.now();
 						if(key.domElement) // todo: move this to renderer somehow
@@ -1003,7 +1034,10 @@ Rect.prototype.contains = function(x, y) {
 	Piano.prototype.play = function(note, vol, participant, delay_ms) {
 		if(!this.keys.hasOwnProperty(note)) return;
 		var key = this.keys[note];
-		if(key.loaded) this.audio.play(key.note, vol, delay_ms, participant.id);
+		if(key.loaded) {
+			if (this.section1.includes(key.note)) this.audio2.play(key.note, vol, delay_ms, participant.id);
+			else this.audio.play(key.note, vol, delay_ms, participant.id);
+		}
 		if(typeof gMidiOutTest === "function") gMidiOutTest(key.note, vol * 100, delay_ms);
 		var self = this;
 		var jq_namediv = $(typeof participant == "undefined" ? null : participant.nameDiv);
@@ -1021,7 +1055,10 @@ Rect.prototype.contains = function(x, y) {
 	Piano.prototype.stop = function(note, participant, delay_ms) {
 		if(!this.keys.hasOwnProperty(note)) return;
 		var key = this.keys[note];
-		if(key.loaded) this.audio.stop(key.note, delay_ms, participant.id);
+		if(key.loaded) {
+			if (this.section1.includes(key.note)) this.audio2.stop(key.note, delay_ms, participant.id);
+			else this.audio.stop(key.note, delay_ms, participant.id);
+		}
 		if(typeof gMidiOutTest === "function") gMidiOutTest(key.note, 0, delay_ms);
 	};
 	
@@ -1499,6 +1536,7 @@ Rect.prototype.contains = function(x, y) {
 
 	var volume_slider = new VolumeSlider(document.getElementById("volume"), function(v) {
 		gPiano.audio.setVolume(v);
+		gPiano.audio2.setVolume(v);
 		if(window.localStorage) localStorage.volume = v;
 	});
 	volume_slider.set(gPiano.audio.volume);
@@ -1963,6 +2001,7 @@ Rect.prototype.contains = function(x, y) {
 		if(localStorage.volume) {
 			volume_slider.set(localStorage.volume);
 			gPiano.audio.setVolume(localStorage.volume);
+			gPiano.audio2.setVolume(localStorage.volume);
 		}
 		else localStorage.volume = gPiano.audio.volume;
 
@@ -2708,6 +2747,7 @@ Rect.prototype.contains = function(x, y) {
 	(function() {
 		var button = document.querySelector("#record-btn");
 		var audio = MPP.piano.audio;
+		var audio2 = MPP.piano.audio2;
 		var context = audio.context;
 		var encoder_sample_rate = 44100;
 		var encoder_kbps = 128;
@@ -2723,6 +2763,7 @@ Rect.prototype.contains = function(x, y) {
 				encoder = new lamejs.Mp3Encoder(2, encoder_sample_rate, encoder_kbps);
 				scriptProcessorNode.onaudioprocess = onAudioProcess;
 				audio.masterGain.connect(scriptProcessorNode);
+				audio2.masterGain.connect(scriptProcessorNode);
 				scriptProcessorNode.connect(context.destination);
 				recording_start_time = Date.now();
 				recording = true;
@@ -2737,6 +2778,7 @@ Rect.prototype.contains = function(x, y) {
 				var url = URL.createObjectURL(blob);
 				scriptProcessorNode.onaudioprocess = null;
 				audio.masterGain.disconnect(scriptProcessorNode);
+				audio2.masterGain.disconnect(scriptProcessorNode);
 				scriptProcessorNode.disconnect(context.destination);
 				recording = false;
 				button.textContent = "Record MP3";
