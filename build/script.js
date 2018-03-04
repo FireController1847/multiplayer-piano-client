@@ -2200,7 +2200,7 @@ Rect.prototype.contains = function(x, y) {
 		if(name == "") name = "lobby";
 		if(gClient.channel && gClient.channel._id === name) return;
 		if(push) {
-			var url = "/" + encodeURIComponent(name).replace("'", "%27");
+			var url = "/piano/" + encodeURIComponent(name).replace("'", "%27");
 			if(window.history && history.pushState) {
 				history.pushState({"depth": gHistoryDepth += 1, "name": name}, "Piano > " + name, url);
 			} else {
