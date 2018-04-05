@@ -2495,7 +2495,8 @@ Rect.prototype.contains = function(x, y) {
 						var channel = evt.data[0] & 0xf;
 						var cmd = evt.data[0] >> 4;
 						var note_number = evt.data[1];
-						var vel = evt.data[2];
+            var vel = evt.data[2];
+            if (channel == 9 || vel < 30) return;
 						//console.log(channel, cmd, note_number, vel);
 						if(cmd == 8 || (cmd == 9 && vel == 0)) {
 							// NOTE_OFF
